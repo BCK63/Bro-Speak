@@ -1,4 +1,4 @@
-import 'package:bro_speak/splash_screen/splash_screen.dart';
+import 'package:bro_speak/presentation/splash_screen/splash_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {

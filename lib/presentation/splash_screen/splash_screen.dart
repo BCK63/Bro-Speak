@@ -27,18 +27,19 @@ class SplashScreen extends StatelessWidget {
                   child: Text(
                 'Bro',
                 style: GoogleFonts.balooBhaijaan2(
-                  color: Colors.white,
+                  color: const Color.fromARGB(255, 0, 0, 0),
                   fontSize: 60,
                   fontWeight: FontWeight.bold,
                   shadows: [
                     const BoxShadow(
                         offset: Offset(3.0, 3.0),
-                        color: Color.fromARGB(255, 39, 38, 38),
+                        color: Color.fromARGB(255, 68, 68, 68),
                         blurRadius: 5.0,
                         inset: true),
                     const BoxShadow(
+                        spreadRadius: 3,
                         offset: Offset(-3.0, -3.0),
-                        color: Color.fromARGB(255, 103, 103, 103),
+                        color: Color.fromARGB(255, 207, 207, 207),
                         inset: true),
                   ],
                 ),
