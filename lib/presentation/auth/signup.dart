@@ -1,10 +1,14 @@
 import 'dart:async';
+import 'package:bro_speak/application/bloc/auth_bloc.dart';
 import 'package:bro_speak/core/button_style.dart';
 import 'package:bro_speak/core/colors.dart';
 import 'package:bro_speak/core/size.dart';
+import 'package:bro_speak/presentation/auth/login.dart';
 import 'package:bro_speak/presentation/auth/widget/widgets.dart';
 import 'package:bro_speak/presentation/widgets/widgets.dart';
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -15,10 +19,11 @@ class SignupScreen extends StatefulWidget {
 
 class _SignupScreenState extends State<SignupScreen>
     with TickerProviderStateMixin {
+  late AuthBloc authBloc;
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController fullNameController = TextEditingController();
-  TextEditingController confirmPasswordController = TextEditingController();
+  TextEditingController batchController = TextEditingController();
   bool isPasswordVisibility = false;
   bool isConfirmPassVisiblity = false;
 
@@ -33,9 +38,11 @@ class _SignupScreenState extends State<SignupScreen>
 
   AnimationController? controller4;
   Animation<double>? animation4;
+  final _forkey = GlobalKey<FormState>();
   @override
   void initState() {
     super.initState();
+    authBloc = BlocProvider.of<AuthBloc>(context);
     controller1 = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 1500));
     animation1 = Tween<double>(begin: 1.9, end: 2.1)
@@ -130,154 +137,256 @@ class _SignupScreenState extends State<SignupScreen>
         automaticallyImplyLeading: false,
         backgroundColor: Colors.transparent,
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          const SizedBox(
-            child: BroSpeakLogo(),
-          ),
-          SizedBox(
-            child: Padding(
-              padding: const EdgeInsets.all(18.0),
-              child: Column(
-                children: [
-                  NeoTextFormField(
-                    controller: fullNameController,
-                    hintText: 'Fullname',
-                  ),
-                  kHeight(h / 30),
-                  NeoTextFormField(
-                    controller: emailController,
-                    hintText: 'Email',
-                  ),
-                  kHeight(h / 30),
-                  NeoTextFormField(
-                    controller: passwordController,
-                    hintText: 'Password',
-                    autocorrect: false,
-                    suffixIcon: IconButton(
-                        onPressed: () {
-                          setState(() {
-                            isPasswordVisibility = !isPasswordVisibility;
-                          });
-                        },
-                        icon: Icon(
-                          isPasswordVisibility
-                              ? Icons.remove_red_eye_rounded
-                              : Icons.visibility_off_rounded,
-                          color: authPagesBlueColor,
-                        )),
-                    obscureText: !isPasswordVisibility,
-                    enableSuggestions: false,
-                  ),
-                  kHeight(h / 30),
-                  NeoTextFormField(
-                    controller: confirmPasswordController,
-                    hintText: 'Confirm Password',
-                    suffixIcon: IconButton(
-                        onPressed: () {
-                          setState(() {
-                            isConfirmPassVisiblity = !isConfirmPassVisiblity;
-                          });
-                        },
-                        icon: Icon(
-                          isConfirmPassVisiblity
-                              ? Icons.remove_red_eye_rounded
-                              : Icons.visibility_off_rounded,
-                          color: authPagesBlueColor,
-                        )),
-                    autocorrect: false,
-                    obscureText: !isConfirmPassVisiblity,
-                    enableSuggestions: false,
-                  ),
-                  kHeight(h / 30),
-                  Center(
-                    child: RichText(
-                        text:  TextSpan(
-                            text:
-                                'By clicking agree & Sign Up, You are agreed\n  to the ',
-                            style: const TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w400,
-                            ),
-                            children: <TextSpan>[
-                          TextSpan(
-                              text: 'Privacy Policy ',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w400,
-                                  color: authPagesBlueColor)),
-                          const TextSpan(
-                              text: 'and ',
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w400,
-                              )),
-                          TextSpan(
-                              text: 'User Agreement',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w400,
-                                  color: authPagesBlueColor)),
-                        ])),
-                  ),
-                  kHeight(20),
-                  SizedBox(
-                    width: w / 1.1,
-                    height: 50,
-                    child: ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor:authPagesBlueColor,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(
-                              8.0), // Set border radius as desired
-                        ),
-                      ),
-                      child: Text(
-                        "SIGNUP",
-                        style: mainButtonTextStyle.copyWith(
-                            fontSize: 20,
-                            letterSpacing: 2,
-                            color: Colors.white),
-                      ),
-                    ),
-                  ),
-                  kHeight(5),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+      body: BlocListener<AuthBloc, AuthState>(
+        listenWhen: (previous, current) =>
+            current is AuthActionState || current is AuthState,
+        listener: (context, state) {
+          if (state is UserSignUpSuccessState) {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const LoginScreen(),
+                ));
+          } else if (state is AuthSuccessActionState) {
+            ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Row(
+                  children: [
+                    Icon(Icons.check_box,color: Colors.green,),
+                    Text("Sign UP Succussful"),
+                  ],
+                )));
+          } else if (state is AuthErrorActionState) {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                backgroundColor: Colors.red,
+                content: Text("Email already exist with another user")));
+          }
+        },
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const SizedBox(
+              child: BroSpeakLogo(),
+            ),
+            SizedBox(
+              child: Padding(
+                padding: const EdgeInsets.all(18.0),
+                child: Form(
+                  key: _forkey,
+                  child: Column(
                     children: [
-                      const Text(
-                        "Already have an account?",
-                        style: TextStyle(fontSize: 18),
+                      NeoTextFormField(
+                        // validator: (p0) {
+                        //   if (p0 == null || p0.isEmpty) {
+                        //     ScaffoldMessenger.of(context).showSnackBar(
+                        //         const SnackBar(
+                        //             content: Text('Fullname is required')));
+                        //     return null;
+                        //   }
+                        //   return null;
+                        // },
+                        controller: fullNameController,
+                        hintText: 'Fullname',
                       ),
-                      TextButton(
-                        child:  Text(
-                          'Sign In',
-                          style: TextStyle(
-                              fontSize: 18,
-                              color: authPagesBlueColor),
+                      kHeight(h / 30),
+                      NeoTextFormField(
+                        // validator: (p0) {
+                        //   if (p0 == null || p0.isEmpty) {
+                        //     ScaffoldMessenger.of(context).showSnackBar(
+                        //         const SnackBar(
+                        //             content: Text('Email is required')));
+                        //     return null;
+                        //   }
+                        //   return null;
+                        // },
+                        keyboardType: TextInputType.emailAddress,
+                        controller: emailController,
+                        hintText: 'Email',
+                      ),
+                      kHeight(h / 30),
+                      NeoTextFormField(
+                        // validator: (p0) {
+                        //   if (p0 == null || p0.isEmpty) {
+                        //     log('null anallo3');
+
+                        //     ScaffoldMessenger.of(context).showSnackBar(
+                        //         const SnackBar(
+                        //             content: Text('Passoword is required')));
+                        //     return null;
+                        //   }
+                        //   return null;
+                        // },
+                        controller: passwordController,
+                        hintText: 'Password',
+                        autocorrect: false,
+                        suffixIcon: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                isPasswordVisibility = !isPasswordVisibility;
+                              });
+                            },
+                            icon: Icon(
+                              isPasswordVisibility
+                                  ? Icons.remove_red_eye_rounded
+                                  : Icons.visibility_off_rounded,
+                              color: authPagesBlueColor,
+                            )),
+                        obscureText: !isPasswordVisibility,
+                        enableSuggestions: false,
+                      ),
+                      kHeight(h / 30),
+                      NeoTextFormField(
+                        // validator: (p0) {
+                        //   if (p0 == null || p0.isEmpty) {
+                        //     log('null anallo2');
+                        //     ScaffoldMessenger.of(context).showSnackBar(
+                        //         const SnackBar(
+                        //             content: Text('Batch is required')));
+                        //     return null;
+                        //   }
+                        //   return null;
+                        // },
+                        controller: batchController,
+                        hintText: 'Batch',
+                      ),
+                      kHeight(h / 30),
+                      Center(
+                        child: RichText(
+                            text: TextSpan(
+                                text:
+                                    'By clicking agree & Sign Up, You are agreed\n  to the ',
+                                style: const TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                                children: <TextSpan>[
+                              TextSpan(
+                                  text: 'Privacy Policy ',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w400,
+                                      color: authPagesBlueColor)),
+                              const TextSpan(
+                                  text: 'and ',
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w400,
+                                  )),
+                              TextSpan(
+                                  text: 'User Agreement',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w400,
+                                      color: authPagesBlueColor)),
+                            ])),
+                      ),
+                      kHeight(20),
+                      SizedBox(
+                        width: w / 1.1,
+                        height: 50,
+                        child: BlocBuilder<AuthBloc, AuthState>(
+                          builder: (context, state) {
+                            if (state is SignUpLoadingState) {
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            } else {
+                              return ElevatedButton(
+                                onPressed: () {
+                                  bool? emailStatus;
+                                  if(emailController.text.isNotEmpty){ emailStatus=
+                                      emailValidation(emailController.text);}
+
+                                  if (fullNameController.text.isNotEmpty &&
+                                      emailController.text.isNotEmpty &&
+                                      passwordController.text.isNotEmpty &&
+                                      batchController.text.isNotEmpty &&
+                                      emailStatus!&&passwordController.text.length>=6) {
+                                    authBloc.add(LoginButtonPressedEvent(
+                                        fullNameController.text,
+                                        batchController.text,
+                                        emailController.text,
+                                        passwordController.text));
+                                  } else if (emailStatus!=null && !emailStatus) { 
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                            backgroundColor: Colors.red,
+                                            content:
+                                                Text("Please provide a valid email address.")));
+                                  }else if(passwordController.text.isNotEmpty&& passwordController.text.length<6){
+                                     ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          backgroundColor: Colors.red,
+                                            content:
+                                                Text("Password Minimum length of 6 characters")));
+                                  } else {
+                                     ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          backgroundColor: Colors.red,
+                                            content:
+                                                Text("All Fields Are Required")));
+                                  }
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: authPagesBlueColor,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(
+                                        8.0), // Set border radius as desired
+                                  ),
+                                ),
+                                child: Text(
+                                  "SIGNUP",
+                                  
+                                  style: mainButtonTextStyle.copyWith(
+                                      fontSize: 20,
+                                      letterSpacing: 2,
+                                      color: Colors.white),
+                                ),
+                              );
+                            }
+                          },
                         ),
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
+                      ),
+                      kHeight(5),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                            "Already have an account?",
+                            style: TextStyle(fontSize: 18),
+                          ),
+                          TextButton(
+                            child: Text(
+                              'Sign In',
+                              style: TextStyle(
+                                  fontSize: 18, color: authPagesBlueColor),
+                            ),
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
+                ),
               ),
             ),
-          ),
-          SizedBox(
-            child: CustomPaint(
-              painter: MyPainter(animation1!.value, animation2!.value,
-                  animation3!.value, animation4!.value),
-              child: SizedBox(
-                height: h / 5 - 32,
-                width: w,
+            SizedBox(
+              child: CustomPaint(
+                painter: MyPainter(animation1!.value, animation2!.value,
+                    animation3!.value, animation4!.value),
+                child: SizedBox(
+                  height: h / 5 - 32,
+                  width: w,
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
+  }
+
+  bool emailValidation(value) {
+    bool emailResult = EmailValidator.validate(value);
+    return emailResult;
   }
 }

@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 class MyTextFormFiled extends StatelessWidget {
@@ -63,18 +62,22 @@ class MyPainter extends CustomPainter {
 }
 
 class NeoTextFormField extends StatelessWidget {
-   NeoTextFormField({
-    super.key,this.controller,
+  NeoTextFormField({
+    super.key,
+    this.controller,
     this.keyboardType,
     this.validator,
     this.hintText,
-    this.suffixIcon,this.enableSuggestions, this.autocorrect, this.obscureText,
+    this.suffixIcon,
+    this.enableSuggestions,
+    this.autocorrect,
+    this.obscureText,
   });
   TextEditingController? controller;
   TextInputType? keyboardType;
-    bool? obscureText ;
-  bool? autocorrect ;
-    bool? enableSuggestions ;
+  bool? obscureText;
+  bool? autocorrect;
+  bool? enableSuggestions;
   Widget? suffixIcon;
   String? Function(String?)? validator;
   String? hintText;
@@ -84,7 +87,7 @@ class NeoTextFormField extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12.0),
         // color: const Color.fromARGB(255, 30, 28, 28),
-                color: const Color.fromARGB(255, 29, 29, 29),
+        color: const Color.fromARGB(255, 29, 29, 29),
 
         boxShadow: const [
           BoxShadow(
@@ -102,21 +105,20 @@ class NeoTextFormField extends StatelessWidget {
         ],
       ),
       child: TextFormField(
-        obscureText: obscureText??false,
-        autocorrect: autocorrect??true,
-        enableSuggestions: enableSuggestions??true,
+        obscureText: obscureText ?? false,
+        autocorrect: autocorrect ?? true,
+        enableSuggestions: enableSuggestions ?? true,
         controller: controller,
-        decoration:  InputDecoration(
+        keyboardType: keyboardType,
+        decoration: InputDecoration(
           suffixIcon: suffixIcon,
           hintText: hintText,
-          hintStyle: const TextStyle(
-              color: Color.fromARGB(255, 128, 128, 128)),
+          hintStyle: const TextStyle(color: Color.fromARGB(255, 128, 128, 128)),
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(
-              horizontal: 16.0, vertical: 12.0),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
         ),
       ),
     );
   }
 }
-

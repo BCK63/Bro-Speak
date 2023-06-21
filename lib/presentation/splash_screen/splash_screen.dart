@@ -10,7 +10,7 @@ class SplashScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp)async {
       await Future.delayed(const Duration(seconds: 5));
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginScreen(),));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginScreen(),));
     });
     return Container(
         decoration: const BoxDecoration(
