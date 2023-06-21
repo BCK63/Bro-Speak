@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:bro_speak/application/repository/auth_repo.dart';
 import 'package:bro_speak/core/button_style.dart';
 import 'package:bro_speak/core/colors.dart';
 import 'package:bro_speak/core/size.dart';
@@ -170,7 +171,7 @@ class _LoginScreenState extends State<LoginScreen>
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => const SignupScreen(),
+                                builder: (context) => const SignUpScreen(),
                               ));
                         },
                         style: const ButtonStyle(
@@ -189,7 +190,11 @@ class _LoginScreenState extends State<LoginScreen>
                     width: 360,
                     height: 50,
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        AuthRepository().logInServices(
+                            emailController.text.trim(),
+                            passwordController.text.trim());
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: authPagesBlueColor,
                         shape: RoundedRectangleBorder(
@@ -224,7 +229,7 @@ class _LoginScreenState extends State<LoginScreen>
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => const SignupScreen(),
+                                builder: (context) => const SignUpScreen(),
                               ));
                         },
                       ),

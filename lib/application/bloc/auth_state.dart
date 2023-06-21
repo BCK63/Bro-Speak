@@ -21,6 +21,14 @@ class SignUpErrorsState extends AuthState {
   const SignUpErrorsState(this.message);
 }
 
-class AuthSuccessActionState extends AuthActionState {}
+class SignUpSuccessActionState extends AuthActionState {}
+
+class LogInLoadingState extends AuthActionState {}
+
+class LogInSuccessState extends AuthState {}
+
+class LogInSuccessActionState extends AuthActionState {}
+
+class LogInErrorState extends AuthActionState {}
 
 class AuthErrorActionState extends AuthActionState {}

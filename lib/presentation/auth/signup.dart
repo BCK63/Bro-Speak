@@ -1,23 +1,24 @@
 import 'dart:async';
 import 'package:bro_speak/application/bloc/auth_bloc.dart';
+import 'package:bro_speak/application/repository/auth_repo.dart';
 import 'package:bro_speak/core/button_style.dart';
 import 'package:bro_speak/core/colors.dart';
 import 'package:bro_speak/core/size.dart';
-import 'package:bro_speak/presentation/auth/login.dart';
 import 'package:bro_speak/presentation/auth/widget/widgets.dart';
 import 'package:bro_speak/presentation/widgets/widgets.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class SignupScreen extends StatefulWidget {
-  const SignupScreen({super.key});
+class SignUpScreen extends StatefulWidget {
+  const SignUpScreen({super.key});
 
   @override
-  State<SignupScreen> createState() => _SignupScreenState();
+  State<SignUpScreen> createState() => _SignupScreenState();
 }
 
-class _SignupScreenState extends State<SignupScreen>
+class _SignupScreenState extends State<SignUpScreen>
     with TickerProviderStateMixin {
   late AuthBloc authBloc;
   TextEditingController emailController = TextEditingController();
@@ -38,7 +39,7 @@ class _SignupScreenState extends State<SignupScreen>
 
   AnimationController? controller4;
   Animation<double>? animation4;
-  final _forkey = GlobalKey<FormState>();
+  final _formkey = GlobalKey<FormState>();
   @override
   void initState() {
     super.initState();
@@ -142,19 +143,18 @@ class _SignupScreenState extends State<SignupScreen>
             current is AuthActionState || current is AuthState,
         listener: (context, state) {
           if (state is UserSignUpSuccessState) {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const LoginScreen(),
-                ));
-          } else if (state is AuthSuccessActionState) {
-            ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Row(
-                  children: [
-                    Icon(Icons.check_box,color: Colors.green,),
-                    Text("Sign UP Succussful"),
-                  ],
-                )));
+            Navigator.pop(context);
+          } else if (state is SignUpErrorsState) {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                content: Row(
+              children: [
+                Icon(
+                  Icons.check_box,
+                  color: Colors.green,
+                ),
+                Text("Sign UP Succussful"),
+              ],
+            )));
           } else if (state is AuthErrorActionState) {
             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                 backgroundColor: Colors.red,
@@ -171,50 +171,21 @@ class _SignupScreenState extends State<SignupScreen>
               child: Padding(
                 padding: const EdgeInsets.all(18.0),
                 child: Form(
-                  key: _forkey,
+                  key: _formkey,
                   child: Column(
                     children: [
                       NeoTextFormField(
-                        // validator: (p0) {
-                        //   if (p0 == null || p0.isEmpty) {
-                        //     ScaffoldMessenger.of(context).showSnackBar(
-                        //         const SnackBar(
-                        //             content: Text('Fullname is required')));
-                        //     return null;
-                        //   }
-                        //   return null;
-                        // },
                         controller: fullNameController,
                         hintText: 'Fullname',
                       ),
-                      kHeight(h / 30),
+                      kHeight(h / 30.h),
                       NeoTextFormField(
-                        // validator: (p0) {
-                        //   if (p0 == null || p0.isEmpty) {
-                        //     ScaffoldMessenger.of(context).showSnackBar(
-                        //         const SnackBar(
-                        //             content: Text('Email is required')));
-                        //     return null;
-                        //   }
-                        //   return null;
-                        // },
                         keyboardType: TextInputType.emailAddress,
                         controller: emailController,
                         hintText: 'Email',
                       ),
-                      kHeight(h / 30),
+                      kHeight(h / 30.h),
                       NeoTextFormField(
-                        // validator: (p0) {
-                        //   if (p0 == null || p0.isEmpty) {
-                        //     log('null anallo3');
-
-                        //     ScaffoldMessenger.of(context).showSnackBar(
-                        //         const SnackBar(
-                        //             content: Text('Passoword is required')));
-                        //     return null;
-                        //   }
-                        //   return null;
-                        // },
                         controller: passwordController,
                         hintText: 'Password',
                         autocorrect: false,
@@ -233,22 +204,12 @@ class _SignupScreenState extends State<SignupScreen>
                         obscureText: !isPasswordVisibility,
                         enableSuggestions: false,
                       ),
-                      kHeight(h / 30),
+                      kHeight(h / 30.h),
                       NeoTextFormField(
-                        // validator: (p0) {
-                        //   if (p0 == null || p0.isEmpty) {
-                        //     log('null anallo2');
-                        //     ScaffoldMessenger.of(context).showSnackBar(
-                        //         const SnackBar(
-                        //             content: Text('Batch is required')));
-                        //     return null;
-                        //   }
-                        //   return null;
-                        // },
                         controller: batchController,
                         hintText: 'Batch',
                       ),
-                      kHeight(h / 30),
+                      kHeight(h / 30.h),
                       Center(
                         child: RichText(
                             text: TextSpan(
@@ -290,39 +251,48 @@ class _SignupScreenState extends State<SignupScreen>
                             } else {
                               return ElevatedButton(
                                 onPressed: () {
-                                  bool? emailStatus;
-                                  if(emailController.text.isNotEmpty){ emailStatus=
-                                      emailValidation(emailController.text);}
+                                  // bool? emailStatus;
+                                  // if (emailController.text.isNotEmpty) {
+                                  //   emailStatus =
+                                  //       emailValidation(emailController.text);
+                                  // }
 
-                                  if (fullNameController.text.isNotEmpty &&
-                                      emailController.text.isNotEmpty &&
-                                      passwordController.text.isNotEmpty &&
-                                      batchController.text.isNotEmpty &&
-                                      emailStatus!&&passwordController.text.length>=6) {
-                                    authBloc.add(LoginButtonPressedEvent(
-                                        fullNameController.text,
-                                        batchController.text,
-                                        emailController.text,
-                                        passwordController.text));
-                                  } else if (emailStatus!=null && !emailStatus) { 
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(
-                                            backgroundColor: Colors.red,
-                                            content:
-                                                Text("Please provide a valid email address.")));
-                                  }else if(passwordController.text.isNotEmpty&& passwordController.text.length<6){
-                                     ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(
-                                          backgroundColor: Colors.red,
-                                            content:
-                                                Text("Password Minimum length of 6 characters")));
-                                  } else {
-                                     ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(
-                                          backgroundColor: Colors.red,
-                                            content:
-                                                Text("All Fields Are Required")));
-                                  }
+                                  // if (fullNameController.text.isNotEmpty &&
+                                  //     emailController.text.isNotEmpty &&
+                                  //     passwordController.text.isNotEmpty &&
+                                  //     batchController.text.isNotEmpty &&
+                                  //     emailStatus! &&
+                                  //     passwordController.text.length >= 6) {
+                                  //   authBloc.add(SignUpButtonPressedEvent(
+                                  //       fullNameController.text,
+                                  //       batchController.text,
+                                  //       emailController.text,
+                                  //       passwordController.text));
+                                  // } else if (emailStatus != null &&
+                                  //     !emailStatus) {
+                                  //   ScaffoldMessenger.of(context).showSnackBar(
+                                  //       const SnackBar(
+                                  //           backgroundColor: Colors.red,
+                                  //           content: Text(
+                                  //               "Please provide a valid email address.")));
+                                  // } else if (passwordController
+                                  //         .text.isNotEmpty &&
+                                  //     passwordController.text.length < 6) {
+                                  //   ScaffoldMessenger.of(context).showSnackBar(
+                                  //       const SnackBar(
+                                  //           backgroundColor: Colors.red,
+                                  //           content: Text(
+                                  //               "Password Minimum length of 6 characters")));
+                                  // } else {
+                                  //   ScaffoldMessenger.of(context).showSnackBar(
+                                  //       const SnackBar(
+                                  //           backgroundColor: Colors.red,
+                                  //           content: Text(
+                                  //               "All Fields Are Required")));
+                                  // }
+                                  AuthRepository().logInServices(
+                                      emailController.text.trim(),
+                                      passwordController.text.trim());
                                 },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: authPagesBlueColor,
@@ -333,7 +303,6 @@ class _SignupScreenState extends State<SignupScreen>
                                 ),
                                 child: Text(
                                   "SIGNUP",
-                                  
                                   style: mainButtonTextStyle.copyWith(
                                       fontSize: 20,
                                       letterSpacing: 2,
