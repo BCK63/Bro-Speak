@@ -8,9 +8,13 @@ class SplashScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp)async {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       await Future.delayed(const Duration(seconds: 5));
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginScreen(),));
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const LoginScreen(),
+          ));
     });
     return Container(
         decoration: const BoxDecoration(
@@ -23,7 +27,7 @@ class SplashScreen extends StatelessWidget {
             ],
           ),
         ),
-        child:const Scaffold(
+        child: const Scaffold(
           backgroundColor: Colors.transparent,
           body: BroSpeakLogo(),
         ));

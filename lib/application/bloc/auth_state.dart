@@ -31,4 +31,10 @@ class LogInSuccessActionState extends AuthActionState {}
 
 class LogInErrorState extends AuthActionState {}
 
+class LoginErrorActionState extends AuthActionState {}
+
 class AuthErrorActionState extends AuthActionState {}
+
+class UserAuthenticated extends AuthState {}
+
+class UserUnAuthenticated extends AuthState {}

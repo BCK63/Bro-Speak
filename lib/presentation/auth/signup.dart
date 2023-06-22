@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:bro_speak/application/bloc/auth_bloc.dart';
-import 'package:bro_speak/application/repository/auth_repo.dart';
 import 'package:bro_speak/core/button_style.dart';
 import 'package:bro_speak/core/colors.dart';
 import 'package:bro_speak/core/size.dart';
@@ -251,48 +250,45 @@ class _SignupScreenState extends State<SignUpScreen>
                             } else {
                               return ElevatedButton(
                                 onPressed: () {
-                                  // bool? emailStatus;
-                                  // if (emailController.text.isNotEmpty) {
-                                  //   emailStatus =
-                                  //       emailValidation(emailController.text);
-                                  // }
+                                  bool? emailStatus;
+                                  if (emailController.text.isNotEmpty) {
+                                    emailStatus =
+                                        emailValidation(emailController.text);
+                                  }
 
-                                  // if (fullNameController.text.isNotEmpty &&
-                                  //     emailController.text.isNotEmpty &&
-                                  //     passwordController.text.isNotEmpty &&
-                                  //     batchController.text.isNotEmpty &&
-                                  //     emailStatus! &&
-                                  //     passwordController.text.length >= 6) {
-                                  //   authBloc.add(SignUpButtonPressedEvent(
-                                  //       fullNameController.text,
-                                  //       batchController.text,
-                                  //       emailController.text,
-                                  //       passwordController.text));
-                                  // } else if (emailStatus != null &&
-                                  //     !emailStatus) {
-                                  //   ScaffoldMessenger.of(context).showSnackBar(
-                                  //       const SnackBar(
-                                  //           backgroundColor: Colors.red,
-                                  //           content: Text(
-                                  //               "Please provide a valid email address.")));
-                                  // } else if (passwordController
-                                  //         .text.isNotEmpty &&
-                                  //     passwordController.text.length < 6) {
-                                  //   ScaffoldMessenger.of(context).showSnackBar(
-                                  //       const SnackBar(
-                                  //           backgroundColor: Colors.red,
-                                  //           content: Text(
-                                  //               "Password Minimum length of 6 characters")));
-                                  // } else {
-                                  //   ScaffoldMessenger.of(context).showSnackBar(
-                                  //       const SnackBar(
-                                  //           backgroundColor: Colors.red,
-                                  //           content: Text(
-                                  //               "All Fields Are Required")));
-                                  // }
-                                  AuthRepository().logInServices(
-                                      emailController.text.trim(),
-                                      passwordController.text.trim());
+                                  if (fullNameController.text.isNotEmpty &&
+                                      emailController.text.isNotEmpty &&
+                                      passwordController.text.isNotEmpty &&
+                                      batchController.text.isNotEmpty &&
+                                      emailStatus! &&
+                                      passwordController.text.length >= 6) {
+                                    authBloc.add(SignUpButtonPressedEvent(
+                                        fullNameController.text,
+                                        batchController.text,
+                                        emailController.text,
+                                        passwordController.text));
+                                  } else if (emailStatus != null &&
+                                      !emailStatus) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                            backgroundColor: Colors.red,
+                                            content: Text(
+                                                "Please provide a valid email address.")));
+                                  } else if (passwordController
+                                          .text.isNotEmpty &&
+                                      passwordController.text.length < 6) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                            backgroundColor: Colors.red,
+                                            content: Text(
+                                                "Password Minimum length of 6 characters")));
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                            backgroundColor: Colors.red,
+                                            content: Text(
+                                                "All Fields Are Required")));
+                                  }
                                 },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: authPagesBlueColor,

@@ -1,6 +1,6 @@
 import 'package:bro_speak/application/bloc/auth_bloc.dart';
 import 'package:bro_speak/application/repository/auth_repo.dart';
-import 'package:bro_speak/presentation/home/home.dart';
+import 'package:bro_speak/presentation/home/home_screen.dart';
 import 'package:bro_speak/presentation/splash_screen/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
           initialRoute: "/",
           routes: {
             "/": (context) => const SplashScreen(),
-            "home": (context) => const HomePage()
+            "/home": (context) => const HomeScreen()
           },
           title: 'Flutter Demo',
           theme: ThemeData.dark(

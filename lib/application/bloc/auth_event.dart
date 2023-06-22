@@ -25,3 +25,7 @@ class LogInButtonPressedEvent extends AuthEvent {
 
   const LogInButtonPressedEvent(this.email, this.password);
 }
+
+class UserLoginEvent extends AuthEvent {}
+
+class UserLogoutEvent extends AuthEvent {}

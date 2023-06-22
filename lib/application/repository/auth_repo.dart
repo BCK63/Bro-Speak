@@ -29,7 +29,7 @@ class AuthRepository {
     return null;
   }
 
-  Future<String> logInServices(String email, String password) async {
+  Future<String?> logInServices(String email, String password) async {
     FlutterSecureStorage storage = const FlutterSecureStorage();
     log("entering here");
     try {
@@ -50,13 +50,14 @@ class AuthRepository {
       } else if (response.statusCode == 404) {
         return "User not found";
       } else if (response.statusCode == 401) {
+        log("entering in wrror log", name: "Invalid username");
         return "Invalid email or password";
       }
     } on DioException catch (e) {
       log(e.message.toString());
 
-      return "Error";
+      return e.message!;
     }
-    return "";
+    return null;
   }
 }
