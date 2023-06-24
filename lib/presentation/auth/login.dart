@@ -5,8 +5,10 @@ import 'package:bro_speak/core/size.dart';
 import 'package:bro_speak/presentation/auth/signup.dart';
 import 'package:bro_speak/presentation/auth/widget/widgets.dart';
 import 'package:bro_speak/presentation/widgets/widgets.dart';
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../application/bloc/auth_bloc.dart';
 
@@ -161,7 +163,7 @@ class _LoginScreenState extends State<LoginScreen>
                       controller: emailController,
                       hintText: 'Email',
                     ),
-                    kHeight(20),
+                    kHeight(20.h),
                     NeoTextFormField(
                       obscureText: !isPasswordVisibility,
                       enableSuggestions: false,
@@ -181,7 +183,6 @@ class _LoginScreenState extends State<LoginScreen>
                       controller: passwordController,
                       hintText: 'Password',
                     ),
-                    kHeight(h / 30),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
@@ -205,7 +206,6 @@ class _LoginScreenState extends State<LoginScreen>
                         )
                       ],
                     ),
-                    kHeight(h / 30),
                     BlocBuilder<AuthBloc, AuthState>(
                       builder: (context, state) {
                         if (state is LogInLoadingState) {
@@ -216,9 +216,41 @@ class _LoginScreenState extends State<LoginScreen>
                             height: 50,
                             child: ElevatedButton(
                               onPressed: () {
-                                authBloc!.add(LogInButtonPressedEvent(
+                               
+                                bool? emailStatus;
+                                if (emailController.text.isNotEmpty) {
+                                  emailStatus =
+                                      emailValidation(emailController.text);
+                                }
+
+                                if (emailController.text.isNotEmpty &&
+                                    passwordController.text.isNotEmpty &&
+                                    emailStatus! &&
+                                    passwordController.text.length >= 6) {
+                                  authBloc!.add(LogInButtonPressedEvent(
                                     emailController.text.trim(),
                                     passwordController.text.trim()));
+                                } else if (emailStatus != null &&
+                                    !emailStatus) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          backgroundColor: Colors.red,
+                                          content: Text(
+                                              "Please provide a valid email address.")));
+                                } else if (passwordController.text.isNotEmpty &&
+                                    passwordController.text.length < 6) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          backgroundColor: Colors.red,
+                                          content: Text(
+                                              "Password Minimum length of 6 characters")));
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          backgroundColor: Colors.red,
+                                          content:
+                                              Text("All Fields Are Required")));
+                                }
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: authPagesBlueColor,
@@ -238,7 +270,7 @@ class _LoginScreenState extends State<LoginScreen>
                         }
                       },
                     ),
-                    kHeight(h / 30),
+                    kHeight(5.h),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -271,7 +303,7 @@ class _LoginScreenState extends State<LoginScreen>
                 painter: MyPainter(animation1!.value, animation2!.value,
                     animation3!.value, animation4!.value),
                 child: SizedBox(
-                  height: h / 4 - 40,
+                  height: h / 3.5 - 40.h,
                   width: w,
                 ),
               ),
@@ -280,5 +312,10 @@ class _LoginScreenState extends State<LoginScreen>
         ),
       ),
     );
+  }
+
+  bool emailValidation(value) {
+    bool emailResult = EmailValidator.validate(value);
+    return emailResult;
   }
 }

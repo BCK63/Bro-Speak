@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "891628196222",
+    "project_id": "bro-speak",
+    "storage_bucket": "bro-speak.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:891628196222:android:533257b2eb8d3f8abde32f",
+        "android_client_info": {
+          "package_name": "com.example.bro_speak"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "891628196222-4i38j8i7s54e749vdmpupi0cbpis3mb3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDiZg2x1AL8c1arlsUW44Jyksp-T9k4gF0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "891628196222-4i38j8i7s54e749vdmpupi0cbpis3mb3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

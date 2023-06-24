@@ -2,11 +2,15 @@ import 'package:bro_speak/application/bloc/auth_bloc.dart';
 import 'package:bro_speak/application/repository/auth_repo.dart';
 import 'package:bro_speak/presentation/home/home_screen.dart';
 import 'package:bro_speak/presentation/splash_screen/splash_screen.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-void main() {
+void main()async {
+  await Firebase.initializeApp();
+
   runApp(const MyApp());
 }
 
@@ -41,4 +45,8 @@ class MyApp extends StatelessWidget {
       ),
     );
   }
+
+  // void initDynamicLinks(){
+  // FirebaseDynamicLinks.instance.onLink()
+  // }
 }
