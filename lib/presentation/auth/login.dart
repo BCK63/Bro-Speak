@@ -140,12 +140,21 @@ class _LoginScreenState extends State<LoginScreen>
           if (state is LogInSuccessState) {
             Navigator.pushReplacementNamed(context, "/home");
           } else if (state is LogInErrorState) {
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                backgroundColor: Colors.red, content: Text("User not found!")));
-          } else if (state is LoginErrorActionState) {
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
                 backgroundColor: Colors.red,
-                content: Text("Invalid email or password!")));
+                content: const Text("User not found!")));
+          } else if (state is LoginErrorActionState) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                backgroundColor: Colors.red,
+                content: const Text("Invalid email or password!")));
           }
         },
         child: Column(
@@ -160,6 +169,7 @@ class _LoginScreenState extends State<LoginScreen>
                 child: Column(
                   children: [
                     NeoTextFormField(
+                      keyboardType: TextInputType.emailAddress,
                       controller: emailController,
                       hintText: 'Email',
                     ),
@@ -216,7 +226,6 @@ class _LoginScreenState extends State<LoginScreen>
                             height: 50,
                             child: ElevatedButton(
                               onPressed: () {
-                               
                                 bool? emailStatus;
                                 if (emailController.text.isNotEmpty) {
                                   emailStatus =
@@ -228,28 +237,43 @@ class _LoginScreenState extends State<LoginScreen>
                                     emailStatus! &&
                                     passwordController.text.length >= 6) {
                                   authBloc!.add(LogInButtonPressedEvent(
-                                    emailController.text.trim(),
-                                    passwordController.text.trim()));
+                                      emailController.text.trim(),
+                                      passwordController.text.trim()));
                                 } else if (emailStatus != null &&
                                     !emailStatus) {
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
+                                      SnackBar(
+                                          behavior: SnackBarBehavior.floating,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8.0),
+                                          ),
                                           backgroundColor: Colors.red,
-                                          content: Text(
+                                          content: const Text(
                                               "Please provide a valid email address.")));
                                 } else if (passwordController.text.isNotEmpty &&
                                     passwordController.text.length < 6) {
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
+                                      SnackBar(
+                                          behavior: SnackBarBehavior.floating,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8.0),
+                                          ),
                                           backgroundColor: Colors.red,
-                                          content: Text(
+                                          content: const Text(
                                               "Password Minimum length of 6 characters")));
                                 } else {
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
+                                      SnackBar(
+                                          behavior: SnackBarBehavior.floating,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8.0),
+                                          ),
                                           backgroundColor: Colors.red,
-                                          content:
-                                              Text("All Fields Are Required")));
+                                          content: const Text(
+                                              "All Fields Are Required")));
                                 }
                               },
                               style: ElevatedButton.styleFrom(

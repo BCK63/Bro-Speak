@@ -24,6 +24,7 @@ class _SignupScreenState extends State<SignUpScreen>
   TextEditingController passwordController = TextEditingController();
   TextEditingController fullNameController = TextEditingController();
   TextEditingController batchController = TextEditingController();
+  TextEditingController confirmPasswordController = TextEditingController();
   bool isPasswordVisibility = false;
   bool isConfirmPassVisiblity = false;
 
@@ -177,13 +178,18 @@ class _SignupScreenState extends State<SignUpScreen>
                         controller: fullNameController,
                         hintText: 'Fullname',
                       ),
-                      kHeight(h / 30.h),
+                      kHeight(10.h),
+                      NeoTextFormField(
+                        controller: batchController,
+                        hintText: 'Batch',
+                      ),
+                      kHeight(10.h),
                       NeoTextFormField(
                         keyboardType: TextInputType.emailAddress,
                         controller: emailController,
                         hintText: 'Email',
                       ),
-                      kHeight(h / 30.h),
+                      kHeight(10.h),
                       NeoTextFormField(
                         controller: passwordController,
                         hintText: 'Password',
@@ -203,41 +209,28 @@ class _SignupScreenState extends State<SignUpScreen>
                         obscureText: !isPasswordVisibility,
                         enableSuggestions: false,
                       ),
-                      kHeight(h / 30.h),
+                      kHeight(10.h),
                       NeoTextFormField(
-                        controller: batchController,
-                        hintText: 'Batch',
+                        controller: confirmPasswordController,
+                        hintText: 'Confirm Password',
+                        autocorrect: false,
+                        suffixIcon: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                isConfirmPassVisiblity =
+                                    !isConfirmPassVisiblity;
+                              });
+                            },
+                            icon: Icon(
+                              isConfirmPassVisiblity
+                                  ? Icons.remove_red_eye_rounded
+                                  : Icons.visibility_off_rounded,
+                              color: authPagesBlueColor,
+                            )),
+                        obscureText: !isConfirmPassVisiblity,
+                        enableSuggestions: false,
                       ),
-                      kHeight(h / 30.h),
-                      Center(
-                        child: RichText(
-                            text: TextSpan(
-                                text:
-                                    'By clicking agree & Sign Up, You are agreed\n  to the ',
-                                style: const TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                                children: <TextSpan>[
-                              TextSpan(
-                                  text: 'Privacy Policy ',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.w400,
-                                      color: authPagesBlueColor)),
-                              const TextSpan(
-                                  text: 'and ',
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w400,
-                                  )),
-                              TextSpan(
-                                  text: 'User Agreement',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.w400,
-                                      color: authPagesBlueColor)),
-                            ])),
-                      ),
-                      kHeight(20),
+                      kHeight(15.h),
                       SizedBox(
                         width: w / 1.1,
                         height: 50,
@@ -261,7 +254,9 @@ class _SignupScreenState extends State<SignUpScreen>
                                       passwordController.text.isNotEmpty &&
                                       batchController.text.isNotEmpty &&
                                       emailStatus! &&
-                                      passwordController.text.length >= 6) {
+                                      passwordController.text.length >= 6 &&
+                                      confirmPasswordController.text ==
+                                          passwordController.text) {
                                     authBloc.add(SignUpButtonPressedEvent(
                                         fullNameController.text,
                                         batchController.text,
@@ -282,6 +277,13 @@ class _SignupScreenState extends State<SignUpScreen>
                                             backgroundColor: Colors.red,
                                             content: Text(
                                                 "Password Minimum length of 6 characters")));
+                                  } else if (confirmPasswordController.text !=
+                                      passwordController.text) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                            backgroundColor: Colors.red,
+                                            content:
+                                                Text("Password Must Be Same")));
                                   } else {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                         const SnackBar(
