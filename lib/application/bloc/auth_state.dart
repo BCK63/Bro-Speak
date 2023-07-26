@@ -38,3 +38,12 @@ class AuthErrorActionState extends AuthActionState {}
 class UserAuthenticated extends AuthState {}
 
 class UserUnAuthenticated extends AuthState {}
+
+class AdminLogInSuccessState extends AuthState {}
+class AdminLogInLoadingState extends AuthActionState {}
+
+class AdminLogInSuccessActionState extends AuthActionState {}
+
+class AdminLogInErrorState extends AuthActionState {}
+
+class AdminLoginErrorActionState extends AuthActionState {}

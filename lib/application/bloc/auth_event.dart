@@ -28,4 +28,15 @@ class LogInButtonPressedEvent extends AuthEvent {
 
 class UserLoginEvent extends AuthEvent {}
 
+
+
 class UserLogoutEvent extends AuthEvent {}
+
+class AdminLogInButtonPressedEvent extends AuthEvent {
+  final String email;
+  final String password;
+
+  const AdminLogInButtonPressedEvent(this.email, this.password);
+}
+
+class AdminLoginEvent extends AuthEvent {}

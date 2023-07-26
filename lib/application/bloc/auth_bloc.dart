@@ -15,7 +15,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthInitialEvent>(authInitialEvent);
     on<SignUpButtonPressedEvent>(signUpButtonPressedEvent);
     on<LogInButtonPressedEvent>(logInButtonPressedEvent);
+    on<AdminLogInButtonPressedEvent>(adminLogInButtonPressedEvent);
     on<UserLoginEvent>(userLoginEvent);
+    // on<AdminLoginEvent>(userLoginEvent);
     on<UserLogoutEvent>(userLogoutEvent);
     checkAccessToken();
   }
@@ -57,6 +59,27 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     } else if (response ==
         "The request returned an invalid status code of 401.") {
       emit(LoginErrorActionState());
+    }
+  }
+
+  FutureOr<void> adminLogInButtonPressedEvent(
+      AdminLogInButtonPressedEvent event, Emitter<AuthState> emit) async {
+    emit(AdminLogInLoadingState());
+    var response = await repo.adminLogInServices(
+      event.email,
+      event.password,
+    );
+
+    if (response == "admin login success") {
+      emit(AdminLogInSuccessActionState());
+      await Future.delayed(const Duration(seconds: 1));
+      emit(AdminLogInSuccessState());
+    } else if (response ==
+        "The request returned an invalid status code of 404.") {
+      emit(AdminLogInErrorState());
+    } else if (response ==
+        "The request returned an invalid status code of 401.") {
+      emit(AdminLoginErrorActionState());
     }
   }
 

@@ -4,7 +4,7 @@ import 'package:bro_speak/core/button_style.dart';
 import 'package:bro_speak/core/colors.dart';
 import 'package:bro_speak/core/size.dart';
 import 'package:bro_speak/presentation/auth/widget/widgets.dart';
-import 'package:bro_speak/presentation/widgets/widgets.dart';
+import 'package:bro_speak/presentation/widgets/app_logo.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -164,8 +164,15 @@ class _SignupScreenState extends State<SignUpScreen>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const SizedBox(
-              child: BroSpeakLogo(),
+             SizedBox(
+              child: BroSpeakLogo(
+            changableHeight: 50,
+            changableWidth: 110,
+            firstSpace: 5,
+            secondSpace: 8,
+            subtitleSize: 15,
+            titleSize: 50,
+          ),
             ),
             SizedBox(
               child: Padding(

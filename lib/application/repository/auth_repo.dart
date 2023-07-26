@@ -10,6 +10,7 @@ class AuthRepository {
   Dio dio = Dio();
   String signUpPath = ApiUrl.baseUrl + ApiUrl.signUp;
   String logInPath = ApiUrl.baseUrl + ApiUrl.logIn;
+  String adminLoginPath = ApiUrl.authLevelBaseUrl+ApiUrl.adminLogin;
   Future<String?> signUpService(
       String email, String name, String password, String batch) async {
     AuthSignUpModel authSignUpModel = AuthSignUpModel(
@@ -60,4 +61,41 @@ class AuthRepository {
     }
     return null;
   }
+
+   Future<String?> adminLogInServices(String email, String password) async {
+    FlutterSecureStorage storage = const FlutterSecureStorage();
+    log("entering here");
+    try {
+      Response response = await dio
+          .post(adminLoginPath, data: {"email": email, "password": password});
+          log(response.toString());
+      if (response.statusCode == 200) {
+        log(response.data.toString(), name: "Login");
+        String accessToken = response.data["results"]["accessToken"];
+        String refreshToken = response.data["results"]["refreshToken"];
+        // log(accessToken);
+        // log(refreshToken);
+
+        await storage.write(key: "admin_access_token", value: accessToken);
+        await storage.write(key: "admin_refresh_token", value: refreshToken);
+
+        log(accessToken.toString(), name: "access_token");
+        log(refreshToken.toString(), name: "refresh_token");
+
+        return "admin login success";
+      } else if (response.statusCode == 404) {
+        return "User not found";
+      } else if (response.statusCode == 401) {
+        log("entering in error log", name: "Invalid username");
+        return "Invalid email or password";
+      }
+    } on DioException catch (e) {
+      log(e.message.toString());
+
+      return e.message!;
+    }
+    return null;
+  }
+
+  
 }

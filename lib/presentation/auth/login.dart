@@ -1,10 +1,11 @@
 import 'dart:async';
+import 'dart:developer';
 import 'package:bro_speak/core/button_style.dart';
 import 'package:bro_speak/core/colors.dart';
 import 'package:bro_speak/core/size.dart';
 import 'package:bro_speak/presentation/auth/signup.dart';
 import 'package:bro_speak/presentation/auth/widget/widgets.dart';
-import 'package:bro_speak/presentation/widgets/widgets.dart';
+import 'package:bro_speak/presentation/widgets/app_logo.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,7 +14,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../application/bloc/auth_bloc.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  const LoginScreen({
+    super.key,
+  });
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -39,6 +42,7 @@ class _LoginScreenState extends State<LoginScreen>
   @override
   void initState() {
     super.initState();
+
     authBloc = BlocProvider.of<AuthBloc>(context);
     controller1 = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 1500));
@@ -100,27 +104,33 @@ class _LoginScreenState extends State<LoginScreen>
         }
       });
 
-    controller4!.forward();
-
-    Timer(const Duration(milliseconds: 800), () {
-      controller3!.forward();
-    });
-    //
-    Timer(const Duration(milliseconds: 1600), () {
-      controller2!.forward();
-    });
-    //
-    Timer(const Duration(milliseconds: 2000), () {
-      controller1!.forward();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      if (mounted) {
+        controller4?.forward();
+        Timer(const Duration(milliseconds: 800), () {
+          controller3?.forward();
+        });
+        //
+        Timer(const Duration(milliseconds: 1600), () {
+          controller2?.forward();
+        });
+        //
+        Timer(const Duration(milliseconds: 2000), () {
+          controller1?.forward();
+        });
+      }
     });
   }
 
+  int tapCount = 0;
+  bool isAdmin = false;
+
   @override
   void dispose() {
-    controller1!.dispose();
-    controller2!.dispose();
-    controller3!.dispose();
-    controller4!.dispose();
+    controller1?.dispose();
+    controller2?.dispose();
+    controller3?.dispose();
+    controller4?.dispose();
     super.dispose();
   }
 
@@ -138,7 +148,19 @@ class _LoginScreenState extends State<LoginScreen>
             current is AuthActionState || current is AuthState,
         listener: (context, state) {
           if (state is LogInSuccessState) {
-            Navigator.pushReplacementNamed(context, "/home");
+            Navigator.pushNamedAndRemoveUntil(
+                context, '/studentHome', (route) => false);
+          } else if (state is AdminLogInSuccessState) {
+            Navigator.pushNamedAndRemoveUntil(
+                context, '/adminSide', (route) => false);
+          } else if (state is AdminLogInSuccessActionState) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                backgroundColor: Colors.green,
+                content: const Text("Admin Login Successful")));
           } else if (state is LogInErrorState) {
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                 behavior: SnackBarBehavior.floating,
@@ -147,6 +169,14 @@ class _LoginScreenState extends State<LoginScreen>
                 ),
                 backgroundColor: Colors.red,
                 content: const Text("User not found!")));
+          } else if (state is AdminLoginErrorActionState) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                backgroundColor: Colors.red,
+                content: const Text("Invalid email or password!")));
           } else if (state is LoginErrorActionState) {
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                 behavior: SnackBarBehavior.floating,
@@ -160,8 +190,33 @@ class _LoginScreenState extends State<LoginScreen>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const SizedBox(
-              child: BroSpeakLogo(),
+            SizedBox(
+              child: InkWell(
+                highlightColor: Colors.transparent,
+                onTap: () async {
+                  tapCount++;
+                  if (tapCount == 5) {
+                    isAdmin = true;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("You are in admin side")));
+                    await Future.delayed(const Duration(seconds: 60));
+                    isAdmin = false;
+                    if (mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                          content: Text("You are in user side")));
+                    }
+                    tapCount = 0;
+                  }
+                },
+                child: const BroSpeakLogo(
+                  changableHeight: 50,
+                  changableWidth: 110,
+                  firstSpace: 5,
+                  secondSpace: 8,
+                  subtitleSize: 15,
+                  titleSize: 50,
+                ),
+              ),
             ),
             SizedBox(
               child: Padding(
@@ -218,7 +273,8 @@ class _LoginScreenState extends State<LoginScreen>
                     ),
                     BlocBuilder<AuthBloc, AuthState>(
                       builder: (context, state) {
-                        if (state is LogInLoadingState) {
+                        if (state is LogInLoadingState ||
+                            state is AdminLogInLoadingState) {
                           return const CircularProgressIndicator();
                         } else {
                           return SizedBox(
@@ -236,9 +292,15 @@ class _LoginScreenState extends State<LoginScreen>
                                     passwordController.text.isNotEmpty &&
                                     emailStatus! &&
                                     passwordController.text.length >= 6) {
-                                  authBloc!.add(LogInButtonPressedEvent(
-                                      emailController.text.trim(),
-                                      passwordController.text.trim()));
+                                  if (!isAdmin) {
+                                    authBloc!.add(LogInButtonPressedEvent(
+                                        emailController.text.trim(),
+                                        passwordController.text.trim()));
+                                  } else {
+                                    authBloc!.add(AdminLogInButtonPressedEvent(
+                                        emailController.text.trim(),
+                                        passwordController.text.trim()));
+                                  }
                                 } else if (emailStatus != null &&
                                     !emailStatus) {
                                   ScaffoldMessenger.of(context).showSnackBar(
@@ -298,9 +360,12 @@ class _LoginScreenState extends State<LoginScreen>
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text(
-                          "Don't have an account?",
-                          style: TextStyle(fontSize: 18),
+                        InkWell(
+                          onTap: () => Navigator.pushNamed(context, "/home"),
+                          child: const Text(
+                            "Don't have an account?",
+                            style: TextStyle(fontSize: 18),
+                          ),
                         ),
                         TextButton(
                           child: Text(

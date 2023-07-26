@@ -25,3 +25,19 @@ class AuthSignUpModel {
         "batch": batch,
     };
 }
+
+class AdminInviteModel {
+    String? email;
+
+    AdminInviteModel({
+        this.email,
+    });
+
+    factory AdminInviteModel.fromJson(Map<String, dynamic> json) => AdminInviteModel(
+        email: json["email"],
+    );
+
+    Map<String, dynamic> toJson() => {
+        "email": email,
+    };
+}

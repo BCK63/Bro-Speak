@@ -1,7 +1,14 @@
+import 'dart:developer';
+
 import 'package:bro_speak/application/bloc/auth_bloc.dart';
 import 'package:bro_speak/application/repository/auth_repo.dart';
-import 'package:bro_speak/presentation/home/home_screen.dart';
+import 'package:bro_speak/presentation/auth/login.dart';
+import 'package:bro_speak/presentation/main_screen/admin_home.dart';
+import 'package:bro_speak/presentation/main_screen/bottom_nav/bottom_nav.dart';
+import 'package:bro_speak/presentation/main_screen/new_admin_form.dart';
+import 'package:bro_speak/presentation/not_found.dart';
 import 'package:bro_speak/presentation/splash_screen/splash_screen.dart';
+import 'package:bro_speak/presentation/students/students_home.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +20,7 @@ void main() async {
   await Firebase.initializeApp();
   runApp(const MyApp());
 }
+
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
@@ -23,35 +31,10 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   void initState() {
+    initDynamicLinks(context);
     super.initState();
-    initDynamicLinks();
   }
 
- Future<void> initDynamicLinks() async {
-      FirebaseDynamicLinks.instance.onLink(
-    onSuccess: (PendingDynamicLinkData? dynamicLink) async {
-      final Uri? deepLink = dynamicLink?.link;
-      if (deepLink != null && deepLink.queryParameters.containsKey('id')) {
-        String id = deepLink.queryParameters['id']!;
-        // Do whatever you need with the ID
-        print('Received ID: $id');
-      }
-    },
-    onError: (OnLinkErrorException e) async {
-      print('Dynamic Link Failed: ${e.message}');
-    },
-  );
-
-
-    final PendingDynamicLinkData? initialLink = await FirebaseDynamicLinks.instance.getInitialLink();
-    if (initialLink?.link != null && initialLink!.link.queryParameters.containsKey('id')) {
-      String id = initialLink.link.queryParameters['id']!;
-
-      // Do whatever you need with the ID
-      print('Received ID: $id');
-    }
-  }
- 
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
@@ -65,20 +48,59 @@ class _MyAppState extends State<MyApp> {
           )
         ],
         child: MaterialApp(
-          initialRoute: "/",
+          initialRoute: "/splash",
           routes: {
-            "/": (context) => const SplashScreen(),
-            "/home": (context) => const HomeScreen()
+            '/adminSide':(context) => BottomNavController(),
+            '/splash': (context) =>  SplashScreen(),
+            '/adminHome': (context) => AdminHome(),
+            '/loginScreen': (context) => const LoginScreen(),
+            '/studentHome':(context) =>const StudentHomeScreen(),
+            // '/home': (context) => const HomeScreen(),
           },
-          title: 'Flutter Demo',
+          onGenerateRoute: (RouteSettings settings) {
+            print('entered onGenerateRoute');
+            if (settings.name == "/") {
+              return MaterialPageRoute(
+                builder: (context) =>  SplashScreen(),
+              );
+            } else {
+              final Uri uri = Uri.parse(settings.name!);
+              final String? id = uri.queryParameters['id'];
+              return MaterialPageRoute(
+                builder: (context) => SplashScreen(id: id),
+              );
+            }
+          },
+          onUnknownRoute: (RouteSettings settings) {
+            return MaterialPageRoute(
+              builder: (context) => const NotFoundScreen(),
+            );
+          },
+          title: 'BRO SPEAK',
           theme: ThemeData.dark(
             useMaterial3: true,
           ),
           debugShowCheckedModeBanner: false,
-          // home: const SplashScreen(),
         ),
       ),
     );
   }
-}
 
+  Future<void> initDynamicLinks(BuildContext context) async {
+    FirebaseDynamicLinks.instance.onLink.listen((dynamicLink) async {
+      final Uri deepLink = dynamicLink.link;
+      print(
+        '$deepLink adlkjaddflkjaddsflkjadsflkjasddflkjasdflkjasdlfkjasddflkjaddf',
+      );
+      if (deepLink != null && deepLink.queryParameters.containsKey('id')) {
+        String? id = deepLink.queryParameters['id'];
+        // Handle the 'id' parameter as needed. You can navigate to the HomeScreen or handle it in your application logic.
+        Navigator.pushNamed(context, '/splash', arguments: id);
+      } else {
+        // Handle other cases if needed.
+      }
+    }, onError: (e) async {
+      print('Dynamic Link Failed: ${e.message}');
+    });
+  }
+}

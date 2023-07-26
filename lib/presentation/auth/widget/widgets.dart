@@ -105,6 +105,7 @@ class NeoTextFormField extends StatelessWidget {
         ],
       ),
       child: TextFormField(
+        validator:validator,
         obscureText: obscureText ?? false,
         autocorrect: autocorrect ?? true,
         enableSuggestions: enableSuggestions ?? true,
