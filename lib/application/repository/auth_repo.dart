@@ -8,11 +8,11 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class AuthRepository {
   Dio dio = Dio();
-  String signUpPath = ApiUrl.baseUrl + ApiUrl.signUp;
-  String logInPath = ApiUrl.baseUrl + ApiUrl.logIn;
-  String adminLoginPath = ApiUrl.authLevelBaseUrl+ApiUrl.adminLogin;
+
   Future<String?> signUpService(
       String email, String name, String password, String batch) async {
+    String signUpPath = ApiUrl.baseUrl + ApiUrl.signUp;
+
     AuthSignUpModel authSignUpModel = AuthSignUpModel(
         batch: batch, email: email, name: name, password: password);
     try {
@@ -31,6 +31,8 @@ class AuthRepository {
   }
 
   Future<String?> logInServices(String email, String password) async {
+    String logInPath = ApiUrl.baseUrl + ApiUrl.logIn;
+
     FlutterSecureStorage storage = const FlutterSecureStorage();
     log("entering here");
     try {
@@ -62,19 +64,18 @@ class AuthRepository {
     return null;
   }
 
-   Future<String?> adminLogInServices(String email, String password) async {
+  Future<String?> adminLogInServices(String email, String password) async {
+    String adminLoginPath = ApiUrl.authLevelBaseUrl + ApiUrl.adminLogin;
     FlutterSecureStorage storage = const FlutterSecureStorage();
     log("entering here");
     try {
       Response response = await dio
           .post(adminLoginPath, data: {"email": email, "password": password});
-          log(response.toString());
+      log(response.toString());
       if (response.statusCode == 200) {
         log(response.data.toString(), name: "Login");
         String accessToken = response.data["results"]["accessToken"];
         String refreshToken = response.data["results"]["refreshToken"];
-        // log(accessToken);
-        // log(refreshToken);
 
         await storage.write(key: "admin_access_token", value: accessToken);
         await storage.write(key: "admin_refresh_token", value: refreshToken);
@@ -97,5 +98,30 @@ class AuthRepository {
     return null;
   }
 
-  
+  Future<String?> adminSignUpServices(
+      String name, String email, String password, String token) async {
+    final adminSignupPath = ApiUrl.authLevelBaseUrl + ApiUrl.adminSignUp;
+    log("entering here");
+    try {
+      AdminSignUpModel dataModel = AdminSignUpModel(
+          email: email, name: name, password: password, token: token);
+      Response response =
+          await dio.post(adminSignupPath, data: jsonEncode(dataModel.toJson()));
+      log(response.toString());
+      if (response.statusCode == 200) {
+        log(response.data.toString(), name: "signup success response");
+        return "admin signup success";
+      } else {
+        return 'Something went wrong!';
+      }
+    } on DioException catch (e) {
+      log(e.message.toString(), name: "Singup Error");
+      if (e.message.toString() ==
+          'The request returned an invalid status code of 400.') {
+        return "Email Not Matching with Invited Mail";
+      } else {
+        return 'Something went wrong!';
+      }
+    }
+  }
 }

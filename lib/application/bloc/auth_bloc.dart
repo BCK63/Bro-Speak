@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:bro_speak/application/repository/auth_repo.dart';
+import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 part 'auth_event.dart';
@@ -10,10 +11,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthRepository repo;
   FlutterSecureStorage storage = const FlutterSecureStorage();
   bool? isAuthenticate;
-  String? access_token;
+  String? accessToken;
   AuthBloc(this.repo) : super(AuthInitial()) {
     on<AuthInitialEvent>(authInitialEvent);
     on<SignUpButtonPressedEvent>(signUpButtonPressedEvent);
+    on<AdminSignUpButtonPressedEvent>(adminSignUpButtonPressedEvent);
     on<LogInButtonPressedEvent>(logInButtonPressedEvent);
     on<AdminLogInButtonPressedEvent>(adminLogInButtonPressedEvent);
     on<UserLoginEvent>(userLoginEvent);
@@ -25,6 +27,19 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   FutureOr<void> authInitialEvent(
       AuthInitialEvent event, Emitter<AuthState> emit) {
     emit(AuthInitial());
+  }
+
+    FutureOr<void> adminSignUpButtonPressedEvent(AdminSignUpButtonPressedEvent event, Emitter<AuthState> emit) async{
+    emit(AdminSignUpLoadingState());
+    var response = await repo.adminSignUpServices(event.name, event.email, event.password, event.token);
+    if(response == 'admin signup success'){
+      emit(AdminSignUpSuccessActionState());
+      emit(AdminSignUpSuccessState());
+    }else if(response == 'Email Not Matching with Invited Mail'){
+      emit(AdminError1ActionState());
+    }else{
+      emit(AdminError2ActionState());
+    }
   }
 
   FutureOr<void> signUpButtonPressedEvent(
@@ -86,22 +101,24 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   FutureOr<void> userLoginEvent(
       UserLoginEvent event, Emitter<AuthState> emit) async {
     isAuthenticate = true;
-    access_token = await storage.read(key: "access_token");
+    accessToken = await storage.read(key: "access_token");
   }
 
   FutureOr<void> userLogoutEvent(
       UserLogoutEvent event, Emitter<AuthState> emit) async {
     isAuthenticate = false;
     storage.delete(key: "access_token");
-    access_token = null;
+    accessToken = null;
   }
 
   Future<void> checkAccessToken() async {
-    access_token = await storage.read(key: "access_token");
-    if (access_token != null) {
+    accessToken = await storage.read(key: "access_token");
+    if (accessToken != null) {
       emit(UserAuthenticated());
     } else {
       emit(UserUnAuthenticated());
     }
   }
+
+
 }

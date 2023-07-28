@@ -19,6 +19,15 @@ class SignUpButtonPressedEvent extends AuthEvent {
       this.name, this.batch, this.email, this.password);
 }
 
+class AdminSignUpButtonPressedEvent extends AuthEvent {
+  final String name;
+  final String email;
+  final String password;
+  final String token;
+
+  const AdminSignUpButtonPressedEvent(this.name, this.email, this.password,this.token);
+}
+
 class LogInButtonPressedEvent extends AuthEvent {
   final String email;
   final String password;
@@ -27,8 +36,6 @@ class LogInButtonPressedEvent extends AuthEvent {
 }
 
 class UserLoginEvent extends AuthEvent {}
-
-
 
 class UserLogoutEvent extends AuthEvent {}
 

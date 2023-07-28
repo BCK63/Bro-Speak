@@ -144,6 +144,7 @@ class _LoginScreenState extends State<LoginScreen>
         backgroundColor: Colors.transparent,
       ),
       body: BlocListener<AuthBloc, AuthState>(
+        
         listenWhen: (previous, current) =>
             current is AuthActionState || current is AuthState,
         listener: (context, state) {

@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:bro_speak/application/bloc/auth_bloc.dart';
 import 'package:bro_speak/core/button_style.dart';
 import 'package:bro_speak/core/colors.dart';
@@ -6,125 +5,41 @@ import 'package:bro_speak/core/size.dart';
 import 'package:bro_speak/presentation/auth/widget/widgets.dart';
 import 'package:bro_speak/presentation/widgets/app_logo.dart';
 import 'package:email_validator/email_validator.dart';
-import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class SignUpScreen extends StatefulWidget {
-  const SignUpScreen({super.key});
+class AdminSignUp extends StatefulWidget {
+  const AdminSignUp({super.key, this.id});
 
+  final String? id;
   @override
-  State<SignUpScreen> createState() => _SignupScreenState();
+  State<AdminSignUp> createState() => _AdminSignUpState();
 }
 
-class _SignupScreenState extends State<SignUpScreen>
+class _AdminSignUpState extends State<AdminSignUp>
     with TickerProviderStateMixin {
   late AuthBloc authBloc;
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController fullNameController = TextEditingController();
-  TextEditingController batchController = TextEditingController();
   TextEditingController confirmPasswordController = TextEditingController();
   bool isPasswordVisibility = false;
   bool isConfirmPassVisiblity = false;
 
-  AnimationController? controller1;
-  Animation<double>? animation1;
-
-  AnimationController? controller2;
-  Animation<double>? animation2;
-
-  AnimationController? controller3;
-  Animation<double>? animation3;
-
-  AnimationController? controller4;
-  Animation<double>? animation4;
   final _formkey = GlobalKey<FormState>();
   @override
   void initState() {
     super.initState();
     authBloc = BlocProvider.of<AuthBloc>(context);
-    controller1 = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 1500));
-    animation1 = Tween<double>(begin: 1.9, end: 2.1)
-        .animate(CurvedAnimation(parent: controller1!, curve: Curves.easeInOut))
-      ..addListener(() {
-        setState(() {});
-      })
-      ..addStatusListener((status) {
-        if (status == AnimationStatus.completed) {
-          controller1!.reverse();
-        } else if (status == AnimationStatus.dismissed) {
-          controller1!.forward();
-        }
-      });
-
-    controller2 = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 1500));
-    animation2 = Tween<double>(begin: 1.8, end: 2.4)
-        .animate(CurvedAnimation(parent: controller2!, curve: Curves.easeInOut))
-      ..addListener(() {
-        setState(() {});
-      })
-      ..addStatusListener((status) {
-        if (status == AnimationStatus.completed) {
-          controller2!.reverse();
-        } else if (status == AnimationStatus.dismissed) {
-          controller2!.forward();
-        }
-      });
-
-    controller3 = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 1500));
-    animation3 = Tween<double>(begin: 1.8, end: 2.4)
-        .animate(CurvedAnimation(parent: controller3!, curve: Curves.easeInOut))
-      ..addListener(() {
-        setState(() {});
-      })
-      ..addStatusListener((status) {
-        if (status == AnimationStatus.completed) {
-          controller3!.reverse();
-        } else if (status == AnimationStatus.dismissed) {
-          controller3!.forward();
-        }
-      });
-
-    controller4 = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 1500));
-    animation4 = Tween<double>(begin: 1.9, end: 2.1)
-        .animate(CurvedAnimation(parent: controller4!, curve: Curves.easeInOut))
-      ..addListener(() {
-        setState(() {});
-      })
-      ..addStatusListener((status) {
-        if (status == AnimationStatus.completed) {
-          controller4!.reverse();
-        } else if (status == AnimationStatus.dismissed) {
-          controller4!.forward();
-        }
-      });
-
-    controller4!.forward();
-
-    Timer(const Duration(milliseconds: 800), () {
-      controller3!.forward();
-    });
-    //
-    Timer(const Duration(milliseconds: 1600), () {
-      controller2!.forward();
-    });
-    //
-    Timer(const Duration(milliseconds: 2000), () {
-      controller1!.forward();
-    });
   }
 
   @override
   void dispose() {
-    controller1!.dispose();
-    controller2!.dispose();
-    controller3!.dispose();
-    controller4!.dispose();
+    emailController.clear();
+    passwordController.clear();
+    fullNameController.clear();
+    confirmPasswordController.clear();
     super.dispose();
   }
 
@@ -142,29 +57,34 @@ class _SignupScreenState extends State<SignUpScreen>
         listenWhen: (previous, current) =>
             current is AuthActionState || current is AuthState,
         listener: (context, state) {
-          if (state is UserSignUpSuccessState) {
-            Navigator.pop(context);
-          } else if (state is SignUpSuccessActionState) {
+          if (state is AdminSignUpSuccessState) {
+            Navigator.pushNamedAndRemoveUntil(
+                context, '/loginScreen', (route) => false);
+          } else if (state is AdminSignUpSuccessActionState) {
             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                content: Text("Signup Successful"),backgroundColor: Colors.green,),);
-          } else if (state is AuthErrorActionState) {
+                content: Text("Signup Successful",),backgroundColor: Colors.green,));
+          } else if (state is AdminError1ActionState) {
             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                 backgroundColor: Colors.red,
-                content: Text("Email already exist with another user")));
+                content: Text("Email Not Matching with Invited Email")));
+          } else if (state is AdminError2ActionState) {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                backgroundColor: Colors.red,
+                content: Text("Something went wrong!")));
           }
         },
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-             SizedBox(
+            const SizedBox(
               child: BroSpeakLogo(
-            changableHeight: 50,
-            changableWidth: 110,
-            firstSpace: 5,
-            secondSpace: 8,
-            subtitleSize: 15,
-            titleSize: 50,
-          ),
+                changableHeight: 50,
+                changableWidth: 110,
+                firstSpace: 5,
+                secondSpace: 8,
+                subtitleSize: 15,
+                titleSize: 50,
+              ),
             ),
             SizedBox(
               child: Padding(
@@ -177,18 +97,13 @@ class _SignupScreenState extends State<SignUpScreen>
                         controller: fullNameController,
                         hintText: 'Fullname',
                       ),
-                      kHeight(10.h),
-                      NeoTextFormField(
-                        controller: batchController,
-                        hintText: 'Batch',
-                      ),
-                      kHeight(10.h),
+                      kHeight(15.h),
                       NeoTextFormField(
                         keyboardType: TextInputType.emailAddress,
                         controller: emailController,
                         hintText: 'Email',
                       ),
-                      kHeight(10.h),
+                      kHeight(15.h),
                       NeoTextFormField(
                         controller: passwordController,
                         hintText: 'Password',
@@ -208,7 +123,7 @@ class _SignupScreenState extends State<SignUpScreen>
                         obscureText: !isPasswordVisibility,
                         enableSuggestions: false,
                       ),
-                      kHeight(10.h),
+                      kHeight(15.h),
                       NeoTextFormField(
                         controller: confirmPasswordController,
                         hintText: 'Confirm Password',
@@ -235,7 +150,7 @@ class _SignupScreenState extends State<SignUpScreen>
                         height: 50,
                         child: BlocBuilder<AuthBloc, AuthState>(
                           builder: (context, state) {
-                            if (state is SignUpLoadingState) {
+                            if (state is AdminSignUpLoadingState) {
                               return const Center(
                                 child: CircularProgressIndicator(),
                               );
@@ -251,16 +166,15 @@ class _SignupScreenState extends State<SignUpScreen>
                                   if (fullNameController.text.isNotEmpty &&
                                       emailController.text.isNotEmpty &&
                                       passwordController.text.isNotEmpty &&
-                                      batchController.text.isNotEmpty &&
                                       emailStatus! &&
                                       passwordController.text.length >= 6 &&
                                       confirmPasswordController.text ==
                                           passwordController.text) {
-                                    authBloc.add(SignUpButtonPressedEvent(
+                                    authBloc.add(AdminSignUpButtonPressedEvent(
                                         fullNameController.text,
-                                        batchController.text,
                                         emailController.text.trim(),
-                                        passwordController.text.trim()));
+                                        passwordController.text.trim(),
+                                        widget.id.toString()));
                                   } else if (emailStatus != null &&
                                       !emailStatus) {
                                     ScaffoldMessenger.of(context).showSnackBar(
@@ -310,41 +224,22 @@ class _SignupScreenState extends State<SignUpScreen>
                           },
                         ),
                       ),
-                      kHeight(5),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Text(
-                            "Already have an account?",
-                            style: TextStyle(fontSize: 18),
-                          ),
-                          TextButton(
-                            child: Text(
-                              'Sign In',
-                              style: TextStyle(
-                                  fontSize: 18, color: authPagesBlueColor),
-                            ),
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                          ),
-                        ],
-                      ),
                     ],
                   ),
                 ),
               ),
             ),
-            SizedBox(
-              child: CustomPaint(
-                painter: MyPainter(animation1!.value, animation2!.value,
-                    animation3!.value, animation4!.value),
-                child: SizedBox(
-                  height: h / 5 - 32,
-                  width: w,
-                ),
-              ),
-            ),
+            kHeight(20.h),
+             Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+               const Text('Having an issue with this application?'),
+                Text(
+                  ' Tell us more',
+                  style: TextStyle(color: Colors.blue.withOpacity(.9)),
+                )
+              ],
+            )
           ],
         ),
       ),

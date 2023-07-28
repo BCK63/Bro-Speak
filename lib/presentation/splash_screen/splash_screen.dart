@@ -1,53 +1,50 @@
-import 'package:bro_speak/presentation/auth/login.dart';
-import 'package:bro_speak/presentation/main_screen/bottom_nav/bottom_nav.dart';
-import 'package:bro_speak/presentation/main_screen/new_admin_form.dart';
-import 'package:bro_speak/presentation/students/students_home.dart';
+import 'package:bro_speak/presentation/auth/admin_signup.dart';
 import 'package:bro_speak/presentation/widgets/app_logo.dart';
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-class SplashScreen extends StatelessWidget {
+class SplashScreen extends StatefulWidget {
   final String? id;
-  SplashScreen({super.key, this.id});
+  const SplashScreen({
+    super.key,
+    this.id,
+  });
 
-  FlutterSecureStorage storage = FlutterSecureStorage();
+  @override
+  State<SplashScreen> createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  FlutterSecureStorage storage = const FlutterSecureStorage();
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-      await Future.delayed(const Duration(seconds: 5));
-      if (id == null) {
-        final adminAccessToken = await storage.read(key: 'admin_access_token');
-        final studentAccessToken = await storage.read(key: 'access_token');
-
-        if (adminAccessToken != null) {
-          Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(
-                builder: (context) => BottomNavController(),
-              ),
-              (route) => false);
-        } else if (studentAccessToken != null) {
-          Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (context) => StudentHomeScreen()),
-              (route) => false);
-        } else {
-          Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (context) => LoginScreen()),
-              (route) => false);
-        }
-      } else {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await Future.delayed(const Duration(seconds: 4));
+      if (widget.id != null && mounted) {
         Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(
-              builder: (context) => NewAdminFormScreen(
-                id: id,
+              builder: (context) => AdminSignUp(
+                id: widget.id,
               ),
             ),
             (route) => false);
+      }
+      if (widget.id == null) {
+        final adminAccessToken = await storage.read(key: 'admin_access_token');
+        final studentAccessToken = await storage.read(key: 'access_token');
+        if (adminAccessToken != null && mounted) {
+          Navigator.pushNamedAndRemoveUntil(
+              context, '/adminSide', (route) => false);
+        } else if (studentAccessToken != null) {
+          Navigator.pushNamedAndRemoveUntil(
+              context, '/studentHome', (route) => false);
+        } else {
+          Navigator.pushNamedAndRemoveUntil(
+              context, '/loginScreen', (route) => false);
+        }
       }
     });
     return Container(
@@ -61,7 +58,7 @@ class SplashScreen extends StatelessWidget {
             ],
           ),
         ),
-        child: Scaffold(
+        child: const Scaffold(
           backgroundColor: Colors.transparent,
           body: BroSpeakLogo(
             changableHeight: 50,

@@ -9,5 +9,6 @@ class ApiUrl {
 
   // admin endpoints 
   static String adminLogin = '/admin/login';
+  static String adminSignUp = '/admin/signup';
   static String newAdminInvite = '/invite';
 }

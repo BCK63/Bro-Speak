@@ -1,11 +1,12 @@
 import 'dart:developer';
 
+import 'package:bro_speak/application/admin/bloc/admin_bloc.dart';
+import 'package:bro_speak/application/admin/repository/admin_repository.dart';
 import 'package:bro_speak/application/bloc/auth_bloc.dart';
 import 'package:bro_speak/application/repository/auth_repo.dart';
 import 'package:bro_speak/presentation/auth/login.dart';
 import 'package:bro_speak/presentation/main_screen/admin_home.dart';
 import 'package:bro_speak/presentation/main_screen/bottom_nav/bottom_nav.dart';
-import 'package:bro_speak/presentation/main_screen/new_admin_form.dart';
 import 'package:bro_speak/presentation/not_found.dart';
 import 'package:bro_speak/presentation/splash_screen/splash_screen.dart';
 import 'package:bro_speak/presentation/students/students_home.dart';
@@ -45,29 +46,39 @@ class _MyAppState extends State<MyApp> {
         providers: [
           BlocProvider(
             create: (context) => AuthBloc(AuthRepository()),
-          )
+          ),
+          BlocProvider(
+            create: (context) => AdminBloc(AdminRepository()),
+          ),
         ],
         child: MaterialApp(
           initialRoute: "/splash",
           routes: {
-            '/adminSide':(context) => BottomNavController(),
-            '/splash': (context) =>  SplashScreen(),
+            '/adminSide': (context) => const BottomNavController(
+                  comingFron: 'main',
+                ),
+            '/splash': (context) => const SplashScreen(),
             '/adminHome': (context) => AdminHome(),
             '/loginScreen': (context) => const LoginScreen(),
-            '/studentHome':(context) =>const StudentHomeScreen(),
-            // '/home': (context) => const HomeScreen(),
+            '/studentHome': (context) => const StudentHomeScreen(),
           },
           onGenerateRoute: (RouteSettings settings) {
-            print('entered onGenerateRoute');
-            if (settings.name == "/") {
-              return MaterialPageRoute(
-                builder: (context) =>  SplashScreen(),
-              );
-            } else {
+            bool entered = false;
+            if (settings.name!.contains('/splash?id=')) {
+              log("entered here also1");
+              entered = true;
               final Uri uri = Uri.parse(settings.name!);
               final String? id = uri.queryParameters['id'];
               return MaterialPageRoute(
-                builder: (context) => SplashScreen(id: id),
+                builder: (context) => SplashScreen(
+                  id: id,
+                ),
+              );
+            }else if (settings.name == "/" && !entered) {
+               log("entered here also2");
+              return MaterialPageRoute(
+                builder: (context) => const SplashScreen(
+                ),
               );
             }
           },
@@ -89,14 +100,16 @@ class _MyAppState extends State<MyApp> {
   Future<void> initDynamicLinks(BuildContext context) async {
     FirebaseDynamicLinks.instance.onLink.listen((dynamicLink) async {
       final Uri deepLink = dynamicLink.link;
-      print(
-        '$deepLink adlkjaddflkjaddsflkjadsflkjasddflkjasdflkjasdlfkjasddflkjaddf',
-      );
+      // print(
+      //   '$deepLink adlkjaddflkjaddsflkjadsflkjasddflkjasdflkjasdlfkjasddflkjaddf',
+      // );
       if (deepLink != null && deepLink.queryParameters.containsKey('id')) {
-        String? id = deepLink.queryParameters['id'];
+        print('entered here');
+        // String? id = deepLink.queryParameters['id'];
         // Handle the 'id' parameter as needed. You can navigate to the HomeScreen or handle it in your application logic.
-        Navigator.pushNamed(context, '/splash', arguments: id);
+        // Navigator.pushNamed(context, '/splash', arguments: id);
       } else {
+        print('entered else');
         // Handle other cases if needed.
       }
     }, onError: (e) async {

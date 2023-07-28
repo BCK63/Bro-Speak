@@ -47,3 +47,17 @@ class AdminLogInSuccessActionState extends AuthActionState {}
 class AdminLogInErrorState extends AuthActionState {}
 
 class AdminLoginErrorActionState extends AuthActionState {}
+
+// admin
+
+class AdminSignUpSuccessState extends AuthState {}
+
+class AdminSignUpSuccessActionState extends AuthActionState {}
+
+class AdminError1ActionState extends AuthActionState {}
+class AdminError2ActionState extends AuthActionState {}
+
+
+class AdminSignUpLoadingState extends AuthState {}
+
+// class AuthErrorActionState extends AuthActionState {}
