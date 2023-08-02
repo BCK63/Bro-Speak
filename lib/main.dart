@@ -4,6 +4,7 @@ import 'package:bro_speak/application/admin/bloc/admin_bloc.dart';
 import 'package:bro_speak/application/admin/repository/admin_repository.dart';
 import 'package:bro_speak/application/bloc/auth_bloc.dart';
 import 'package:bro_speak/application/repository/auth_repo.dart';
+import 'package:bro_speak/presentation/auth/admin_signup.dart';
 import 'package:bro_speak/presentation/auth/login.dart';
 import 'package:bro_speak/presentation/main_screen/admin_home.dart';
 import 'package:bro_speak/presentation/main_screen/bottom_nav/bottom_nav.dart';
@@ -30,11 +31,84 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  bool dynamicLinksInitialized = false;
+  bool bottomNavControllerInitialized = false;
+
   @override
   void initState() {
-    initDynamicLinks(context);
     super.initState();
+    if (!dynamicLinksInitialized) {
+      initDynamicLinks(context);
+      dynamicLinksInitialized = true;
+    }
   }
+
+  // @override
+  // Widget build(BuildContext context) {
+  //   return ScreenUtilInit(
+  //     designSize: const Size(360, 690),
+  //     minTextAdapt: true,
+  //     splitScreenMode: true,
+  //     builder: (context, child) => MultiBlocProvider(
+  //       providers: [
+  //         BlocProvider(
+  //           create: (context) => AuthBloc(AuthRepository()),
+  //         ),
+  //         BlocProvider(
+  //           create: (context) => AdminBloc(AdminRepository()),
+  //         ),
+  //       ],
+  //       child: MaterialApp(
+  //         initialRoute: "/splash",
+  //         routes: {
+  //           '/splash': (context) {
+  //             if (!bottomNavControllerInitialized) {
+  //               bottomNavControllerInitialized = true;
+  //               return const SplashScreen();
+  //             } else {
+  //               return const SizedBox.shrink();
+  //             }
+  //           },
+  //           '/adminHome': (context) => AdminHome(),
+  //           '/loginScreen': (context) => const LoginScreen(),
+  //           '/studentHome': (context) => const StudentHomeScreen(),
+  //         },
+  //         onGenerateRoute: (RouteSettings settings) {
+  //             bool entered = false;
+  //           if (settings.name!.contains('/splash?id=')) {
+  //             log("entered here also1");
+  //             entered = true;
+  //             final Uri uri = Uri.parse(settings.name!);
+  //             final String? id = uri.queryParameters['id'];
+  //             return MaterialPageRoute(
+  //               builder: (context) => SplashScreen(
+  //                 id: id,
+  //               ),
+  //             );
+  //           }
+  //           if (settings.name == "/" && !entered) {
+  //              log("entered here also2");
+  //             return MaterialPageRoute(
+  //               builder: (context) => const SplashScreen(
+  //               ),
+  //             );
+  //           }
+  //           // ... (the rest of your code)
+  //         },
+  //         onUnknownRoute: (RouteSettings settings) {
+  //           return  MaterialPageRoute(
+  //             builder: (context) => const NotFoundScreen(),
+  //           );
+  //         },
+  //         title: 'BRO SPEAK',
+  //         theme: ThemeData.dark(
+  //           useMaterial3: true,
+  //         ),
+  //         debugShowCheckedModeBanner: false,
+  //       ),
+  //     ),
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -52,33 +126,30 @@ class _MyAppState extends State<MyApp> {
           ),
         ],
         child: MaterialApp(
-          initialRoute: "/splash",
+          
           routes: {
             '/adminSide': (context) => const BottomNavController(
                   comingFron: 'main',
                 ),
-            '/splash': (context) => const SplashScreen(),
             '/adminHome': (context) => AdminHome(),
             '/loginScreen': (context) => const LoginScreen(),
             '/studentHome': (context) => const StudentHomeScreen(),
           },
           onGenerateRoute: (RouteSettings settings) {
-            bool entered = false;
+            bool isEntered = false;
             if (settings.name!.contains('/splash?id=')) {
               log("entered here also1");
-              entered = true;
+              isEntered = true;
               final Uri uri = Uri.parse(settings.name!);
               final String? id = uri.queryParameters['id'];
               return MaterialPageRoute(
-                builder: (context) => SplashScreen(
-                  id: id,
-                ),
+                builder: (context) =>  AdminSignUp(id: id,)
               );
-            }else if (settings.name == "/" && !entered) {
-               log("entered here also2");
+            }
+            if (settings.name == "/" && !isEntered) {
+              log("entered here also2");
               return MaterialPageRoute(
-                builder: (context) => const SplashScreen(
-                ),
+                builder: (context) => const SplashScreen(),
               );
             }
           },
@@ -100,17 +171,11 @@ class _MyAppState extends State<MyApp> {
   Future<void> initDynamicLinks(BuildContext context) async {
     FirebaseDynamicLinks.instance.onLink.listen((dynamicLink) async {
       final Uri deepLink = dynamicLink.link;
-      // print(
-      //   '$deepLink adlkjaddflkjaddsflkjadsflkjasddflkjasdflkjasdlfkjasddflkjaddf',
-      // );
+
       if (deepLink != null && deepLink.queryParameters.containsKey('id')) {
         print('entered here');
-        // String? id = deepLink.queryParameters['id'];
-        // Handle the 'id' parameter as needed. You can navigate to the HomeScreen or handle it in your application logic.
-        // Navigator.pushNamed(context, '/splash', arguments: id);
       } else {
         print('entered else');
-        // Handle other cases if needed.
       }
     }, onError: (e) async {
       print('Dynamic Link Failed: ${e.message}');

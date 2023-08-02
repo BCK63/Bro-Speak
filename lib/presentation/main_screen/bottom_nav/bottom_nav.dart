@@ -8,21 +8,23 @@ import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 
 class BottomNavController extends StatefulWidget {
-  const BottomNavController({super.key,required this.comingFron});
+  const BottomNavController({super.key, required this.comingFron});
 
-final comingFron;
+  final comingFron;
   @override
   State<BottomNavController> createState() => _BottomNavControllerState();
 }
 
 class _BottomNavControllerState extends State<BottomNavController> {
-
-  @override
+@override
   void initState() {
-    log(widget.comingFron.toString(),name: "alkjfasd");
+    // TODO: implement initState
     super.initState();
+     log(widget.comingFron.toString(), name: "alkjfasd");
   }
+
   int currentIndex = 0;
+
   List<Widget> screens = [
     AdminHome(),
     const AdminSignUp(),

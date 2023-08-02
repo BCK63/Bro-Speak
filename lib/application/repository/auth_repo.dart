@@ -56,10 +56,11 @@ class AuthRepository {
         log("entering in wrror log", name: "Invalid username");
         return "Invalid email or password";
       }
+
     } on DioException catch (e) {
       log(e.message.toString());
 
-      return e.message!;
+      return e.message.toString();
     }
     return null;
   }

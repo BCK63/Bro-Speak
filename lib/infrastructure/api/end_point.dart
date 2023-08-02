@@ -1,5 +1,5 @@
 class ApiUrl {
-  static String baseUrl = "http://10.4.4.63:3000/api/v1/";
+  static String baseUrl = "http://10.4.4.107:3000/api/v1/";
   static String authLevelBaseUrl = 'http://10.4.4.63:3000/api/v1/auth';
   static String adminLevelBaseUrl = "http://10.4.4.63:3000/api/v1/admin";
 
