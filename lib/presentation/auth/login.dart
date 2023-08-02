@@ -5,6 +5,8 @@ import 'package:bro_speak/core/colors.dart';
 import 'package:bro_speak/core/size.dart';
 import 'package:bro_speak/presentation/auth/signup.dart';
 import 'package:bro_speak/presentation/auth/widget/widgets.dart';
+import 'package:bro_speak/presentation/main_screen/bottom_nav/bottom_nav.dart';
+import 'package:bro_speak/presentation/students/students_home.dart';
 import 'package:bro_speak/presentation/widgets/app_logo.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
@@ -144,16 +146,25 @@ class _LoginScreenState extends State<LoginScreen>
         backgroundColor: Colors.transparent,
       ),
       body: BlocListener<AuthBloc, AuthState>(
-        
         listenWhen: (previous, current) =>
             current is AuthActionState || current is AuthState,
         listener: (context, state) {
           if (state is LogInSuccessState) {
-            Navigator.pushNamedAndRemoveUntil(
-                context, '/studentHome', (route) => false);
+            Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => StudentHomeScreen(),
+                ),
+                (route) => false);
           } else if (state is AdminLogInSuccessState) {
-            Navigator.pushNamedAndRemoveUntil(
-                context, '/adminSide', (route) => false);
+            Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => BottomNavController(
+                    comingFron: 'LoginScreen bro!',
+                  ),
+                ),
+                (route) => false);
           } else if (state is AdminLogInSuccessActionState) {
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                 behavior: SnackBarBehavior.floating,

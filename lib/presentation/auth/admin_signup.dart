@@ -1,13 +1,16 @@
 import 'package:bro_speak/application/bloc/auth_bloc.dart';
+import 'package:bro_speak/application/provider/dynamiclinks_provider.dart';
 import 'package:bro_speak/core/button_style.dart';
 import 'package:bro_speak/core/colors.dart';
 import 'package:bro_speak/core/size.dart';
+import 'package:bro_speak/presentation/auth/login.dart';
 import 'package:bro_speak/presentation/auth/widget/widgets.dart';
 import 'package:bro_speak/presentation/widgets/app_logo.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 
 class AdminSignUp extends StatefulWidget {
   const AdminSignUp({super.key, this.id});
@@ -31,6 +34,10 @@ class _AdminSignUpState extends State<AdminSignUp>
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      Provider.of<DynamicLinksssProvider>(context, listen: false)
+          .isEnteredThroughDynamicLinks = true;
+    });
     authBloc = BlocProvider.of<AuthBloc>(context);
   }
 
@@ -45,6 +52,7 @@ class _AdminSignUpState extends State<AdminSignUp>
 
   @override
   Widget build(BuildContext context) {
+    
     double w = MediaQuery.of(context).size.width;
     double h = MediaQuery.of(context).size.height;
     return Scaffold(
@@ -58,11 +66,19 @@ class _AdminSignUpState extends State<AdminSignUp>
             current is AuthActionState || current is AuthState,
         listener: (context, state) {
           if (state is AdminSignUpSuccessState) {
-            Navigator.pushNamedAndRemoveUntil(
-                context, '/loginScreen', (route) => false);
+            Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const LoginScreen(),
+                ),
+                (route) => false);
           } else if (state is AdminSignUpSuccessActionState) {
             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                content: Text("Signup Successful",),backgroundColor: Colors.green,));
+              content: Text(
+                "Signup Successful",
+              ),
+              backgroundColor: Colors.green,
+            ));
           } else if (state is AdminError1ActionState) {
             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                 backgroundColor: Colors.red,
@@ -230,10 +246,10 @@ class _AdminSignUpState extends State<AdminSignUp>
               ),
             ),
             kHeight(20.h),
-             Row(
+            Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-               const Text('Having an issue with this application?'),
+                const Text('Having an issue with this application?'),
                 Text(
                   ' Tell us more',
                   style: TextStyle(color: Colors.blue.withOpacity(.9)),

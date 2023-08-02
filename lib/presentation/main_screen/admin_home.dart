@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:bro_speak/domain/auth_model.dart';
 import 'package:bro_speak/infrastructure/api/end_point.dart';
 import 'package:bro_speak/presentation/admin/admin_list.dart';
+import 'package:bro_speak/presentation/auth/login.dart';
 import 'package:bro_speak/presentation/auth/widget/widgets.dart';
 import 'package:bro_speak/presentation/widgets/app_logo.dart';
 import 'package:flutter/material.dart';
@@ -103,8 +104,8 @@ class AdminHome extends StatelessWidget {
                   FlutterSecureStorage storage = const FlutterSecureStorage();
                   await storage.delete(key: 'admin_access_token');
                   await storage.delete(key: 'admin_refresh_token');
-                  Navigator.pushNamedAndRemoveUntil(
-                      context, '/loginScreen', (route) => false);
+                              Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) =>const LoginScreen(),), (route) => false);
+
                 },
               ),
             ),

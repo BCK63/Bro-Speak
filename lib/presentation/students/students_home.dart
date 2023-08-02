@@ -1,4 +1,5 @@
 
+import 'package:bro_speak/presentation/auth/login.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -15,7 +16,7 @@ class StudentHomeScreen extends StatelessWidget {
           ElevatedButton(onPressed: ()async{
             FlutterSecureStorage storage  = const FlutterSecureStorage();
             await storage.delete(key: 'access_token');
-            Navigator.pushNamedAndRemoveUntil(context, "/loginScreen", (route) => false);
+            Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) =>const LoginScreen(),), (route) => false);
           }, child: const Text("LogOut",))
         ],
       ),
