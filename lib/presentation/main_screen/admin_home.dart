@@ -1,11 +1,6 @@
-import 'dart:convert';
-import 'dart:math';
 
-import 'package:bro_speak/domain/auth_model.dart';
-import 'package:bro_speak/infrastructure/api/end_point.dart';
 import 'package:bro_speak/presentation/admin/admin_list.dart';
 import 'package:bro_speak/presentation/auth/login.dart';
-import 'package:bro_speak/presentation/auth/widget/widgets.dart';
 import 'package:bro_speak/presentation/widgets/app_logo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -65,7 +60,7 @@ class AdminHome extends StatelessWidget {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => AllAdminsList(),
+                            builder: (context) => const AllAdminsList(),
                           ));
                     },
                   ),

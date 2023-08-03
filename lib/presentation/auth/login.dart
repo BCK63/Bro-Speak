@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 import 'package:bro_speak/core/button_style.dart';
 import 'package:bro_speak/core/colors.dart';
 import 'package:bro_speak/core/size.dart';
@@ -153,14 +152,14 @@ class _LoginScreenState extends State<LoginScreen>
             Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => StudentHomeScreen(),
+                  builder: (context) => const StudentHomeScreen(),
                 ),
                 (route) => false);
           } else if (state is AdminLogInSuccessState) {
             Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => BottomNavController(
+                  builder: (context) => const BottomNavController(
                     comingFron: 'LoginScreen bro!',
                   ),
                 ),
@@ -204,6 +203,7 @@ class _LoginScreenState extends State<LoginScreen>
           children: [
             SizedBox(
               child: InkWell(
+                
                 highlightColor: Colors.transparent,
                 onTap: () async {
                   tapCount++;

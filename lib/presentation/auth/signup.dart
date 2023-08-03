@@ -156,7 +156,7 @@ class _SignupScreenState extends State<SignUpScreen>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-             SizedBox(
+             const SizedBox(
               child: BroSpeakLogo(
             changableHeight: 50,
             changableWidth: 110,

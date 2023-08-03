@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'package:bro_speak/presentation/admin/admin_list.dart';
 import 'package:bro_speak/presentation/auth/admin_signup.dart';
 import 'package:bro_speak/presentation/main_screen/admin_home.dart';
-import 'package:bro_speak/presentation/not_found.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 
@@ -28,7 +27,7 @@ class _BottomNavControllerState extends State<BottomNavController> {
   List<Widget> screens = [
     AdminHome(),
     const AdminSignUp(),
-    AllAdminsList(),
+    const AllAdminsList(),
   ];
   @override
   Widget build(BuildContext context) {

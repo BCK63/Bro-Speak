@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:bro_speak/application/admin/bloc/admin_bloc.dart';
 import 'package:bro_speak/application/admin/repository/admin_repository.dart';
 import 'package:bro_speak/application/bloc/auth_bloc.dart';
@@ -60,9 +59,7 @@ class _MyAppState extends State<MyApp> {
           ],
           child: MaterialApp(
             onGenerateRoute: (RouteSettings settings) {
-              if (settings.name!.contains('/splash?id=')) {
-                log("entered here also1");
-
+              if (settings.name!.contains('/splash?id=')) {                
                 final Uri uri = Uri.parse(settings.name!);
                 final String? id = uri.queryParameters['id'];
                 return MaterialPageRoute(
@@ -70,6 +67,7 @@ class _MyAppState extends State<MyApp> {
                           id: id,
                         ));
               }
+              return null;
             },
             onUnknownRoute: (RouteSettings settings) {
               return MaterialPageRoute(
@@ -92,7 +90,7 @@ class _MyAppState extends State<MyApp> {
     FirebaseDynamicLinks.instance.onLink.listen((dynamicLink) async {
       final Uri deepLink = dynamicLink.link;
 
-      if (deepLink != null && deepLink.queryParameters.containsKey('id')) {
+      if (deepLink.queryParameters.containsKey('id')) {
         log('entered here');
       } else {
         log('entered else');

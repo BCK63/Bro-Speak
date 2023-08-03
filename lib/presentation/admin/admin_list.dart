@@ -8,7 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AllAdminsList extends StatefulWidget {
-  AllAdminsList({super.key});
+  const AllAdminsList({super.key});
 
   @override
   State<AllAdminsList> createState() => _AllAdminsListState();
